@@ -88,3 +88,8 @@ Notice the default color is 0xFF3B3131 (FF stands for full opacity (You can mess
 
 
 
+
+
+I do not claim any rights for any images.
+
+
