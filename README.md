@@ -12,7 +12,7 @@ Tileframe contains functions to add a frame arround an image. The frame can cons
 ### Init:
 To use first get an instance of it by calling:
 
-var frame:TileFrame = TileFrame.getInstance();
+		var frame:TileFrame = TileFrame.getInstance();
 
 </br></br>
 
