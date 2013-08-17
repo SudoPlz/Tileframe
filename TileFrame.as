@@ -5,25 +5,66 @@ package com.sudoplz.TileFrame
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
-	
+
 	public class TileFrame
 	{
 		
 		private static var instance:TileFrame;
 		private static var allowInstantiation:Boolean;
 		
-	    private var frames:Dictionary;
-	
-		public function TileFrame()
+		private var frames:Dictionary;
+
+		
+
+		/**	getInstance 
+		*	This class implements the singleton pattern. 
+		*	Just call TileFrame.getInstance(); instead of new TileFrame(); to access the singleton.
+		* @return  -  The singleton object
+		*/
+		public static function getInstance():TileFrame 
 		{
-			if (!allowInstantiation) {
-				throw new Error("Error: Instantiation failed: Use TileFrame.getInstance() instead of new.");
+			if (instance == null) {
+				allowInstantiation = true;
+				instance = new TileFrame();
+				allowInstantiation = false;
 			}
-	        frames = new Dictionary();
+			return instance;
 		}
-	
-	    /**      drawFrameOnTopOfImg
-	     *        Adds a frame on TOP of an excisting img.
+
+
+
+
+		/**	drawFrameOnTopOfImg
+		*	Adds a frame on TOP of an excisting img.
+		* @param target  - The target img
+		* @param fWidth   - The frame width
+		* @param fHeight  - The frame height
+		* @param thickness - The frame thickness
+		* @param frameAlpha  - The frame alpha
+		* @param darkColour  - The frames top,left sides colour
+		* @param brightColour  - The frames bottom,right sides colour
+		* @return  -  the same img you imported but with a frame on top of it
+		*/
+		public function drawFrameOnTopOfImg( target:BitmapData, fWidth:Number, fHeight:Number , thickness:int = 2 , frameAlpha:Number = 1, darkColour:uint  = 0xFF3B3131, brightColour:uint = 0xFF736F6E):BitmapData
+		{
+			var frame: Sprite = frames[fWidth+"x"+fHeight];
+			if (frames[fWidth+"x"+fHeight] == undefined)
+			{
+				frame = createFrame( fWidth, fHeight , thickness, darkColour, brightColour, frameAlpha );
+				frames[fWidth+"x"+fHeight] = frame;
+			}
+			else
+			{
+				frame = frames[fWidth+"x"+fHeight];
+			}
+			 
+			target.draw( frame );
+			return target;
+		}
+
+
+			/**	drawFrameReplacingImg
+	     *	Adds a frame on an img REPLACING any pixels if they exist. If the img size is more than MAX_ASSET_SIZE, then the new img will have MAX MAX_ASSET_SIZE. Then DISPOSES the given bt dt
 	     * @param target  - The target img
 	     * @param fWidth   - The frame width
 	     * @param fHeight  - The frame height
@@ -31,84 +72,77 @@ package com.sudoplz.TileFrame
 	     * @param frameAlpha  - The frame alpha
 	     * @param darkColour  - The frames top,left sides colour
 	     * @param brightColour  - The frames bottom,right sides colour
-	     * @return  -  the same img you imported but with a frame on top of it
-	    **/
-		public function drawFrameOnTopOfImg( target:BitmapData, fWidth:Number, fHeight:Number , thickness:int = 2 , frameAlpha:Number = 1, darkColour:uint  = 0xFF3B3131, brightColour:uint = 0xFF736F6E):BitmapData
-		{
-	    var frame: Sprite = frames[fWidth+"x"+fHeight];
-				if (frames[fWidth+"x"+fHeight] == undefined)
-				{
-					frame = createFrame( fWidth, fHeight , thickness, darkColour, brightColour, frameAlpha );
-				frames[fWidth+"x"+fHeight] = frame;
-				}
-	    else
-	    {
-	        frame = frames[fWidth+"x"+fHeight];
-	    }
-			 
-				target.draw( frame );
-	    return target;
-		}
-	
-	
-		/**      drawFrameReplacingImg
-		 *        Adds a frame on an img REPLACING any pixels if they exist. If the img size is more than MAX_ASSET_SIZE, then the new img will have MAX MAX_ASSET_SIZE. Then DISPOSES the given bt dt
-		 * @param target  - The target img
-		 * @param fWidth   - The frame width
-		 * @param fHeight  - The frame height
-		 * @param thickness - The frame thickness
-		 * @param frameAlpha  - The frame alpha
-		 * @param darkColour  - The frames top,left sides colour
-		 * @param brightColour  - The frames bottom,right sides colour
-		 * @return  -  a new img with the frame drawn on it. Be sure to destroy the last img to save ram
-		**/
+	     * @return  -  a new img with the frame drawn on it. Be sure to destroy the last img to save ram
+	     */
 		public function drawFrameReplacingImg(target:BitmapData , fWidth:Number, fHeight:Number,  thickness:int = 1 , frameAlpha:Number = 1, darkColour:uint  = 0xFF3B3131, brightColour:uint = 0xFF736F6E):BitmapData
-	    {
-	                                                                                                     //remember max is MAX_ASSET_SIZE = 2048
-	        var newWidth:uint = (fWidth+2*thickness>Constants.MAX_ASSET_SIZE? Constants.MAX_ASSET_SIZE:fWidth+2*thickness);      //restraints for Fruitfly
-	        var newHeight:uint = (fHeight+2*thickness>Constants.MAX_ASSET_SIZE? Constants.MAX_ASSET_SIZE:fHeight+2*thickness);   //restraints for Fruitfly
-	
-	        var frameArround:Sprite = createFrame( newWidth, newHeight, thickness, darkColour, brightColour, frameAlpha );
-	
-	        var newImg:BitmapData = new BitmapData(newWidth,newHeight,true,0x00FFFFFF);
-	
-	        //destPoint = where copypixels copies the pixels TO
-	        var destPoint:Point = new Point(1,1);
-	
-	        var rect:Rectangle;
-	                                      //this rect is the INPUT copy pixels copies from
-	        var copyXFrom:uint = 0;
-	        var copyYFrom:uint = 0;
-	        var copyWidth:uint = newWidth;
-	        var copyHeight:uint = newHeight;
-	
-	//            if (target.width==newWidth || ) //if the frame is on top of our img
-	//                rect = new Rectangle(1,1,newWidth-1,newHeight-1);   //then we make the copypixes copy 1 pixel less from eachside
-	        if (target.width==newWidth)
-	        {
-	            copyXFrom = 1;
-	            copyWidth = newWidth-2;
-	        }
-	        if (target.height==newHeight)
-	        {
-	            copyYFrom = 1;
-	            copyHeight = newHeight-2;
-	        }
-	        rect = new Rectangle(copyXFrom,copyYFrom,copyWidth,copyHeight);
-	
-	
-	        //copyPixels(source image, input position, width and height (where to get pixels from), output position (where to put pixels to in the new image)
-	        newImg.copyPixels(target, rect , destPoint);
-	        //newImg.threshold(target, target.rect, destPoint,"==", 0xFFFF0000 , 0x00000000, 0xFFFFFFFF, true);
-	
-	        newImg.draw( frameArround );
-	        rect = null;
-	        frameArround = null;
-	
-	        target.dispose();       //we dispose the old one
-	        target = newImg
-	        return target;
-	    }
+		{
+			                                                                                             //remember max is MAX_ASSET_SIZE = 2048
+			var newWidth:uint = (fWidth+2*thickness>Constants.MAX_ASSET_SIZE? Constants.MAX_ASSET_SIZE:fWidth+2*thickness);      //restraints for Fruitfly
+			var newHeight:uint = (fHeight+2*thickness>Constants.MAX_ASSET_SIZE? Constants.MAX_ASSET_SIZE:fHeight+2*thickness);   //restraints for Fruitfly
+
+			var frameArround:Sprite = createFrame( newWidth, newHeight, thickness, darkColour, brightColour, frameAlpha );
+
+			var newImg:BitmapData = new BitmapData(newWidth,newHeight,true,0x00FFFFFF);
+
+			//destPoint = where copypixels copies the pixels TO
+			var destPoint:Point = new Point(1,1);
+
+			var rect:Rectangle;
+										//this rect is the INPUT copy pixels copies from
+			var copyXFrom:uint = 0;
+			var copyYFrom:uint = 0;
+			var copyWidth:uint = newWidth;
+			var copyHeight:uint = newHeight;
+
+			if (target.width==newWidth)
+			{
+				copyXFrom = 1;
+				copyWidth = newWidth-2;
+			}
+			if (target.height==newHeight)
+			{
+				copyYFrom = 1;
+				copyHeight = newHeight-2;
+			}
+			rect = new Rectangle(copyXFrom,copyYFrom,copyWidth,copyHeight);
+
+
+			//copyPixels(source image, input position, width and height (where to get pixels from), output position (where to put pixels to in the new image)
+			newImg.copyPixels(target, rect , destPoint);
+			//newImg.threshold(target, target.rect, destPoint,"==", 0xFFFF0000 , 0x00000000, 0xFFFFFFFF, true);
+
+			newImg.draw( frameArround );
+			rect = null;
+			frameArround = null;
+
+			target.dispose();       //we dispose the old one
+			target = newImg
+			return target;
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		/////////////////////////////////////////////////////////
+		// INNER FUNCTIONS below. (no need to be called by the user)//
+		/////////////////////////////////////////////////////////
+
+		
+		public function TileFrame()
+		{
+			if (!allowInstantiation) 
+			{
+				throw new Error("Error: Instantiation failed: Use TileFrame.getInstance() instead of new.");
+			}
+			frames = new Dictionary();
+		}
+		
+		
+		
 		private function createFrame( fWidth:Number, fHeight:Number , thickness:int , darkColour:uint , brightColour:uint, frameAlpha:Number) : Sprite
 		{
 			var frameShape:Sprite = new Sprite();
@@ -225,13 +259,6 @@ package com.sudoplz.TileFrame
 			return verticalLine;
 		}
 		
-		public static function getInstance():TileFrame {
-			if (instance == null) {
-				allowInstantiation = true;
-				instance = new TileFrame();
-				allowInstantiation = false;
-			}
-			return instance;
-		}
+		
 	}
 }
