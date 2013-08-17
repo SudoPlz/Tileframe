@@ -13,6 +13,11 @@ package com.sudoplz.TileFrame
 		private static var allowInstantiation:Boolean;
 		
 		private var frames:Dictionary;
+		
+
+		//Set this to any value you desire IF for some reason you want restrictions in output image size.
+		//For example set it to 2048 for Fruitfly.
+		private var MAX_ASSET_SIZE:uint = 999999;	
 
 		
 
@@ -63,13 +68,13 @@ package com.sudoplz.TileFrame
 		}
 
 
-			/**	drawFrameReplacingImg
+		/**	drawFrameReplacingImg
 	     *	Adds a frame on an img REPLACING any pixels if they exist. If the img size is more than MAX_ASSET_SIZE, then the new img will have MAX MAX_ASSET_SIZE. Then DISPOSES the given bt dt
 	     * @param target  - The target img
 	     * @param fWidth   - The frame width
 	     * @param fHeight  - The frame height
 	     * @param thickness - The frame thickness
-	     * @param frameAlpha  - The frame alpha
+	     * @param frameAlpha  - The frame alpha (0 = transparent)
 	     * @param darkColour  - The frames top,left sides colour
 	     * @param brightColour  - The frames bottom,right sides colour
 	     * @return  -  a new img with the frame drawn on it. Be sure to destroy the last img to save ram
@@ -77,8 +82,8 @@ package com.sudoplz.TileFrame
 		public function drawFrameReplacingImg(target:BitmapData , fWidth:Number, fHeight:Number,  thickness:int = 1 , frameAlpha:Number = 1, darkColour:uint  = 0xFF3B3131, brightColour:uint = 0xFF736F6E):BitmapData
 		{
 			                                                                                             //remember max is MAX_ASSET_SIZE = 2048
-			var newWidth:uint = (fWidth+2*thickness>Constants.MAX_ASSET_SIZE? Constants.MAX_ASSET_SIZE:fWidth+2*thickness);      //restraints for Fruitfly
-			var newHeight:uint = (fHeight+2*thickness>Constants.MAX_ASSET_SIZE? Constants.MAX_ASSET_SIZE:fHeight+2*thickness);   //restraints for Fruitfly
+			var newWidth:uint = (fWidth+2*thickness>MAX_ASSET_SIZE? MAX_ASSET_SIZE:fWidth+2*thickness);      //restraints for Fruitfly
+			var newHeight:uint = (fHeight+2*thickness>MAX_ASSET_SIZE? MAX_ASSET_SIZE:fHeight+2*thickness);   //restraints for Fruitfly
 
 			var frameArround:Sprite = createFrame( newWidth, newHeight, thickness, darkColour, brightColour, frameAlpha );
 
