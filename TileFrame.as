@@ -6,7 +6,7 @@ import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.utils.Dictionary;
 
-public class TileFrame
+	public class TileFrame
 	{
 		
 		private static var instance:TileFrame;
@@ -35,19 +35,19 @@ public class TileFrame
      */
 		public function drawFrameOnTopOfImg( target:BitmapData, fWidth:Number, fHeight:Number , thickness:int = 2 , frameAlpha:Number = 1, darkColour:uint  = 0xFF3B3131, brightColour:uint = 0xFF736F6E):BitmapData
 		{
-            var frame: Sprite = frames[fWidth+"x"+fHeight];
-			if (frames[fWidth+"x"+fHeight] == undefined)
-			{
-				frame = createFrame( fWidth, fHeight , thickness, darkColour, brightColour, frameAlpha );
-                frames[fWidth+"x"+fHeight] = frame;
-			}
-            else
-            {
-                frame = frames[fWidth+"x"+fHeight];
-            }
+        var frame: Sprite = frames[fWidth+"x"+fHeight];
+				if (frames[fWidth+"x"+fHeight] == undefined)
+				{
+					frame = createFrame( fWidth, fHeight , thickness, darkColour, brightColour, frameAlpha );
+				frames[fWidth+"x"+fHeight] = frame;
+				}
+        else
+        {
+            frame = frames[fWidth+"x"+fHeight];
+        }
 			 
-			target.draw( frame );
-            return target;
+				target.draw( frame );
+        return target;
 		}
 
 
@@ -122,129 +122,129 @@ public class TileFrame
 		
 		
 		
-		private function createFrame( fWidth:Number, fHeight:Number , thickness:int , darkColour:uint , brightColour:uint, frameAlpha:Number) : Sprite
-		{
-			var frameShape:Sprite = new Sprite();
-			
-			//lets create the dark parts first (bottom and right part of the frame)
-			
-			//we need a dark triangle for bot left (part of the bottom frame)
-			var botLeftDarkTriangle:Sprite = getDarkTriangle(thickness,darkColour, frameAlpha);
-			botLeftDarkTriangle.x = 0;
-			botLeftDarkTriangle.y = fHeight-thickness //fix the point 0,0 of the triangle
-			
-			//also I need the same dark triangle top right
-			var topRightDarkTriangle:Sprite = getDarkTriangle(thickness,darkColour, frameAlpha);
-			topRightDarkTriangle.x = fWidth - thickness;
-			topRightDarkTriangle.y = 0;
-			
-			//also i need the dark bot Line
-			var botDarkLine:Sprite = getHorizontalLine(thickness, fWidth, darkColour, frameAlpha);
-			botDarkLine.x = thickness;
-			botDarkLine.y = fHeight-thickness;
-			
-			//also i need the dark vertical right line
-			var rightDarkLine:Sprite = getVerticalLine(thickness, fHeight, darkColour, frameAlpha);
-			rightDarkLine.x = fWidth-thickness;
-			rightDarkLine.y = thickness;
-			
-			
-			// now lets create the bright parts first (top and left part of the frame)
-			
-			//we need a bright triangle for bot left (part of the bottom frame)
-			var botLeftBrightTriangle:Sprite = getBrightTriangle(thickness,brightColour, frameAlpha);
-			botLeftBrightTriangle.x = 0;
-			botLeftBrightTriangle.y = fHeight-thickness //fix the point 0,0 of the triangle
-			
-			//also I need the same bright triangle top right
-			var topRightBrightTriangle:Sprite = getBrightTriangle(thickness,brightColour, frameAlpha);
-			topRightBrightTriangle.x = fWidth - thickness;
-			topRightBrightTriangle.y = 0;
-			
-			//also i need the bright top Line
-			var botBrightLine:Sprite = getHorizontalLine(thickness, fWidth, brightColour, frameAlpha);
-			botBrightLine.x = thickness;
-			botBrightLine.y = 0;
-			
-			//also i need the bright vertical left line
-			var rightBrightLine:Sprite = getVerticalLine(thickness, fHeight, brightColour, frameAlpha);
-			rightBrightLine.x = 0;
-			rightBrightLine.y = 0;
-			
-			
-			frameShape.addChild(botDarkLine);
-			frameShape.addChild(botBrightLine);
-			frameShape.addChild(rightDarkLine);
-			frameShape.addChild(rightBrightLine);
-			frameShape.addChild(botLeftDarkTriangle);
-			frameShape.addChild(botLeftBrightTriangle);
-			frameShape.addChild(topRightDarkTriangle);
-			frameShape.addChild(topRightBrightTriangle);
-			return frameShape
-		}
-		
-		
-		private function getDarkTriangle( thickness:int, darkColour:uint, alpha:Number) : Sprite
-		{
-			var botLeft:Point = new Point(0,thickness);
-			var botRight:Point = new Point(thickness ,0);
-			var topRight:Point = new Point(thickness,thickness);	
-			
-			var verticies:Vector.<Number> = Vector.<Number>([botLeft.x, botLeft.y, botRight.x, botRight.y, topRight.x, topRight.y]);
-			
-			var darkTriangle:Sprite = new Sprite();
-			darkTriangle.graphics.beginFill(darkColour, alpha);
-			darkTriangle.graphics.drawTriangles(verticies);
-			darkTriangle.graphics.endFill();
-			
-			return darkTriangle;
-		}
-		
-		private function getBrightTriangle( thickness:int , brightColour:uint, alpha:Number) : Sprite
-		{
-			var botLeft:Point = new Point(0,0);
-			var topLeft:Point = new Point(0,thickness);
-			var topRight:Point = new Point(thickness,0);	
-			
-			var verticies:Vector.<Number> = Vector.<Number>([botLeft.x, botLeft.y, topLeft.x, topLeft.y, topRight.x, topRight.y]);
-			
-			var brightTriangle:Sprite = new Sprite();
-			brightTriangle.graphics.beginFill(brightColour, alpha);
-			brightTriangle.graphics.drawTriangles(verticies);
-			brightTriangle.graphics.endFill();
-			
-			return brightTriangle;
-		}
-		
-		private function getHorizontalLine( thickness:int , lineLength:Number, colour:uint, alpha:Number ):Sprite
-		{
-			
-			var horizontalLine:Sprite = new Sprite();
-			horizontalLine.graphics.beginFill(colour, alpha);
-			horizontalLine.graphics.drawRect(0,0,lineLength-thickness-thickness,thickness);
-			horizontalLine.graphics.endFill();
-			
-			return horizontalLine;
-		}
-		
-		private function getVerticalLine( thickness:int , lineLength:Number, colour:uint, alpha:Number ):Sprite
-		{
-			
-			var verticalLine:Sprite = new Sprite();
-			verticalLine.graphics.beginFill(colour, alpha);
-			verticalLine.graphics.drawRect(0,0,thickness,lineLength-thickness);
-			verticalLine.graphics.endFill();
-			
-			return verticalLine;
-		}
-		
-		public static function getInstance():TileFrame {
-			if (instance == null) {
-				allowInstantiation = true;
-				instance = new TileFrame();
-				allowInstantiation = false;
+			private function createFrame( fWidth:Number, fHeight:Number , thickness:int , darkColour:uint , brightColour:uint, frameAlpha:Number) : Sprite
+			{
+				var frameShape:Sprite = new Sprite();
+				
+				//lets create the dark parts first (bottom and right part of the frame)
+				
+				//we need a dark triangle for bot left (part of the bottom frame)
+				var botLeftDarkTriangle:Sprite = getDarkTriangle(thickness,darkColour, frameAlpha);
+				botLeftDarkTriangle.x = 0;
+				botLeftDarkTriangle.y = fHeight-thickness //fix the point 0,0 of the triangle
+				
+				//also I need the same dark triangle top right
+				var topRightDarkTriangle:Sprite = getDarkTriangle(thickness,darkColour, frameAlpha);
+				topRightDarkTriangle.x = fWidth - thickness;
+				topRightDarkTriangle.y = 0;
+				
+				//also i need the dark bot Line
+				var botDarkLine:Sprite = getHorizontalLine(thickness, fWidth, darkColour, frameAlpha);
+				botDarkLine.x = thickness;
+				botDarkLine.y = fHeight-thickness;
+				
+				//also i need the dark vertical right line
+				var rightDarkLine:Sprite = getVerticalLine(thickness, fHeight, darkColour, frameAlpha);
+				rightDarkLine.x = fWidth-thickness;
+				rightDarkLine.y = thickness;
+				
+				
+				// now lets create the bright parts first (top and left part of the frame)
+				
+				//we need a bright triangle for bot left (part of the bottom frame)
+				var botLeftBrightTriangle:Sprite = getBrightTriangle(thickness,brightColour, frameAlpha);
+				botLeftBrightTriangle.x = 0;
+				botLeftBrightTriangle.y = fHeight-thickness //fix the point 0,0 of the triangle
+				
+				//also I need the same bright triangle top right
+				var topRightBrightTriangle:Sprite = getBrightTriangle(thickness,brightColour, frameAlpha);
+				topRightBrightTriangle.x = fWidth - thickness;
+				topRightBrightTriangle.y = 0;
+				
+				//also i need the bright top Line
+				var botBrightLine:Sprite = getHorizontalLine(thickness, fWidth, brightColour, frameAlpha);
+				botBrightLine.x = thickness;
+				botBrightLine.y = 0;
+				
+				//also i need the bright vertical left line
+				var rightBrightLine:Sprite = getVerticalLine(thickness, fHeight, brightColour, frameAlpha);
+				rightBrightLine.x = 0;
+				rightBrightLine.y = 0;
+				
+				
+				frameShape.addChild(botDarkLine);
+				frameShape.addChild(botBrightLine);
+				frameShape.addChild(rightDarkLine);
+				frameShape.addChild(rightBrightLine);
+				frameShape.addChild(botLeftDarkTriangle);
+				frameShape.addChild(botLeftBrightTriangle);
+				frameShape.addChild(topRightDarkTriangle);
+				frameShape.addChild(topRightBrightTriangle);
+				return frameShape
 			}
-			return instance;
+			
+			
+			private function getDarkTriangle( thickness:int, darkColour:uint, alpha:Number) : Sprite
+			{
+				var botLeft:Point = new Point(0,thickness);
+				var botRight:Point = new Point(thickness ,0);
+				var topRight:Point = new Point(thickness,thickness);	
+				
+				var verticies:Vector.<Number> = Vector.<Number>([botLeft.x, botLeft.y, botRight.x, botRight.y, topRight.x, topRight.y]);
+				
+				var darkTriangle:Sprite = new Sprite();
+				darkTriangle.graphics.beginFill(darkColour, alpha);
+				darkTriangle.graphics.drawTriangles(verticies);
+				darkTriangle.graphics.endFill();
+				
+				return darkTriangle;
+			}
+			
+			private function getBrightTriangle( thickness:int , brightColour:uint, alpha:Number) : Sprite
+			{
+				var botLeft:Point = new Point(0,0);
+				var topLeft:Point = new Point(0,thickness);
+				var topRight:Point = new Point(thickness,0);	
+				
+				var verticies:Vector.<Number> = Vector.<Number>([botLeft.x, botLeft.y, topLeft.x, topLeft.y, topRight.x, topRight.y]);
+				
+				var brightTriangle:Sprite = new Sprite();
+				brightTriangle.graphics.beginFill(brightColour, alpha);
+				brightTriangle.graphics.drawTriangles(verticies);
+				brightTriangle.graphics.endFill();
+				
+				return brightTriangle;
+			}
+			
+			private function getHorizontalLine( thickness:int , lineLength:Number, colour:uint, alpha:Number ):Sprite
+			{
+				
+				var horizontalLine:Sprite = new Sprite();
+				horizontalLine.graphics.beginFill(colour, alpha);
+				horizontalLine.graphics.drawRect(0,0,lineLength-thickness-thickness,thickness);
+				horizontalLine.graphics.endFill();
+				
+				return horizontalLine;
+			}
+			
+			private function getVerticalLine( thickness:int , lineLength:Number, colour:uint, alpha:Number ):Sprite
+			{
+				
+				var verticalLine:Sprite = new Sprite();
+				verticalLine.graphics.beginFill(colour, alpha);
+				verticalLine.graphics.drawRect(0,0,thickness,lineLength-thickness);
+				verticalLine.graphics.endFill();
+				
+				return verticalLine;
+			}
+			
+			public static function getInstance():TileFrame {
+				if (instance == null) {
+					allowInstantiation = true;
+					instance = new TileFrame();
+					allowInstantiation = false;
+				}
+				return instance;
+			}
 		}
-	}
 }
